@@ -18,12 +18,15 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -33,25 +36,20 @@ jobs:
         with:
           gradle-version: '8.9'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK Platform and Build Tools
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-
-      - name: Locate Android project
+      - name: Install Android SDK components
         shell: bash
         run: |
-          if [ -f settings.gradle ] && [ -f app/build.gradle ]; then
-            echo "PROJECT_DIR=." >> "$GITHUB_ENV"
-          elif [ -f TVLauncher-v1.9.1-ready.zip ]; then
-            mkdir -p source
-            unzip -q TVLauncher-v1.9.1-ready.zip -d source
-            echo "PROJECT_DIR=source/TVRemoteLauncher-v1.9" >> "$GITHUB_ENV"
-          else
-            echo "::error::Android project not found. Add project files or upload TVLauncher-v1.9.1-ready.zip to repository root."
-            exit 1
-          fi
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager --install "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Extract Android project
+        shell: bash
+        run: |
+          test -f TVLauncher-v1.9.1-ready.zip
+          mkdir -p source
+          unzip -q TVLauncher-v1.9.1-ready.zip -d source
+          test -f source/TVRemoteLauncher-v1.9/settings.gradle
+          echo "PROJECT_DIR=source/TVRemoteLauncher-v1.9" >> "$GITHUB_ENV"
 
       - name: Build debug APK
         run: gradle --no-daemon -p "$PROJECT_DIR" assembleDebug
@@ -59,9 +57,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: TVLauncher-debug
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            source/TVRemoteLauncher-v1.9/app/build/outputs/apk/debug/*.apk
+          name: TVLauncher-v1.9.1-debug
+          path: source/TVRemoteLauncher-v1.9/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
