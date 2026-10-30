@@ -56,6 +56,9 @@ jobs:
           mkdir -p source
           unzip -q TVLauncher-v1.9.1-ready.zip -d source
           test -f source/TVRemoteLauncher-v1.9/settings.gradle
+          MAIN_ACTIVITY="source/TVRemoteLauncher-v1.9/app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java"
+          test -f "$MAIN_ACTIVITY"
+          sed -i 's/ri\.loadBanner(pm)/ri.activityInfo.loadBanner(pm)/' "$MAIN_ACTIVITY"
           echo "PROJECT_DIR=source/TVRemoteLauncher-v1.9" >> "$GITHUB_ENV"
 
       - name: Build debug APK
