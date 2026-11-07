@@ -280,11 +280,16 @@ if readme.exists():
         "此原始碼封裝本身不代表 APK 已完成編譯。",
         "本版 APK 已由 GitHub Actions 成功編譯並通過自動化相容性檢查；實際電視韌體、Widget Provider 與遙控器操作仍需在目標裝置驗收。"
     )
-    docs = docs.replace(
-        "## 原生 Android 小工具",
-        "## 建置驗證\n- CI 已成功執行原生 Widget patch、相容性檢查及 assembleDebug。\n- Debug applicationId：tw.kangyuan.tvlauncher.debug（可與正式版並存）。\n- Android 最低版本：8.0 / API 26。\n\n## 原生 Android 小工具"
-    )
-    if "## 原生 Android 小工具" not in docs:
+    marker = "## 原生 Android 小工具"
+    verification = """## 建置驗證
+- CI 已成功執行原生 Widget patch、相容性檢查及 assembleDebug。
+- Debug applicationId：tw.kangyuan.tvlauncher.debug（可與正式版並存）。
+- Android 最低版本：8.0 / API 26。
+
+"""
+    if marker in docs and "## 建置驗證" not in docs:
+        docs = docs.replace(marker, verification + marker, 1)
+    if marker not in docs:
         docs += """
 
 ## 原生 Android 小工具
