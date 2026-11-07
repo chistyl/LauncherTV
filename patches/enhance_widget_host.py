@@ -272,7 +272,7 @@ if missing:
     raise SystemExit("Widget enhancement validation failed: " + ", ".join(missing))
 
 # Keep the source package documentation aligned with the implemented controls.
-project_root = path.parents[7]
+project_root = path.parents[6]
 readme = project_root / "README.zh-TW.md"
 if readme.exists():
     docs = readme.read_text(encoding="utf-8")
