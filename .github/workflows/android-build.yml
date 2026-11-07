@@ -82,7 +82,7 @@ jobs:
           java = (project / "app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java").read_text(encoding="utf-8")
 
           assert re.search(r'<uses-feature android:name="android.software.app_widgets" android:required="false"\s*/>', manifest), "Widget feature must be optional"
-          assert r"\\n" not in manifest, "Manifest contains a literal escaped newline"
+          assert r"\n" not in manifest, "Manifest contains a literal escaped newline"
           assert re.search(r'\bminSdk\s+26\b', gradle), "Minimum Android version must remain API 26"
           assert re.search(r'\bversionCode\s+10\b', gradle), "Version Code changed unexpectedly"
           assert "applicationIdSuffix '.debug'" in gradle, "Debug build must remain installable alongside release"
