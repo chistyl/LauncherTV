@@ -14,7 +14,7 @@ if manifest_path.exists():
         marker = '<uses-feature android:name="android.software.leanback" android:required="false" />'
         if marker not in manifest:
             raise SystemExit("Manifest insertion point for optional widget feature not found")
-        manifest = manifest.replace(marker, marker + "\\n    " + feature)
+        manifest = manifest.replace(marker, marker + "\n    " + feature)
         manifest_path.write_text(manifest, encoding="utf-8")
         print("Added optional Android AppWidget feature declaration")
 else:
