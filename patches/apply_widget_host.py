@@ -4,6 +4,22 @@ import sys
 path = Path(sys.argv[1])
 source = path.read_text(encoding="utf-8")
 
+# Declare AppWidget support as optional so TV devices without a widget host
+# remain compatible and are not filtered out by feature-based package checks.
+manifest_path = path.parents[6] / "src" / "main" / "AndroidManifest.xml"
+if manifest_path.exists():
+    manifest = manifest_path.read_text(encoding="utf-8")
+    feature = '<uses-feature android:name="android.software.app_widgets" android:required="false" />'
+    if "android.software.app_widgets" not in manifest:
+        marker = '<uses-feature android:name="android.software.leanback" android:required="false" />'
+        if marker not in manifest:
+            raise SystemExit("Manifest insertion point for optional widget feature not found")
+        manifest = manifest.replace(marker, marker + "\\n    " + feature)
+        manifest_path.write_text(manifest, encoding="utf-8")
+        print("Added optional Android AppWidget feature declaration")
+else:
+    raise SystemExit("AndroidManifest.xml not found")
+
 if "APP_WIDGET_HOST_ID" in source:
     print("Widget host patch already applied")
     raise SystemExit(0)
