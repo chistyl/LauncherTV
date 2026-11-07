@@ -277,7 +277,7 @@ readme = project_root / "README.zh-TW.md"
 if readme.exists():
     docs = readme.read_text(encoding="utf-8")
     docs = docs.replace(
-        "本原始碼封裝本身不代表 APK 已完成編譯。",
+        "此原始碼封裝本身不代表 APK 已完成編譯。",
         "本版 APK 已由 GitHub Actions 成功編譯並通過自動化相容性檢查；實際電視韌體、Widget Provider 與遙控器操作仍需在目標裝置驗收。"
     )
     docs = docs.replace(
@@ -298,7 +298,7 @@ if readme.exists():
 
 注意：部分 Android TV 韌體會停用 AppWidgetHost，或沒有提供任何第三方 Widget Provider。這種情況下，Launcher 會顯示無可用小工具提示；是否能顯示特定 Widget，仍取決於電視系統及該 Provider 的相容性。
 """
-        readme.write_text(docs, encoding="utf-8")
+    readme.write_text(docs, encoding="utf-8")
 
 path.write_text(s, encoding="utf-8")
 print("Enhanced Widget size, order, recovery and remote-focus controls:", path)
