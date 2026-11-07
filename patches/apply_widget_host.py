@@ -259,6 +259,12 @@ if anchor not in source:
     raise SystemExit("Widget method insertion point not found")
 source = source.replace(anchor, widget_methods + anchor)
 
+# Replace the original wallpaper-only result handler with the combined handler above.
+old_result = '    @Override protected void onActivityResult(int requestCode,int resultCode,Intent data) { super.onActivityResult(requestCode,resultCode,data); if(requestCode==701 && resultCode==RESULT_OK && data!=null && data.getData()!=null){ Uri u=data.getData(); try{getContentResolver().takePersistableUriPermission(u,Intent.FLAG_GRANT_READ_URI_PERMISSION);}catch(Exception ignored){} getSharedPreferences(PREF,MODE_PRIVATE).edit().putString(KEY_BG,u.toString()).apply(); buildHome(); loadApps(); } }'
+if old_result not in source:
+    raise SystemExit("Original wallpaper onActivityResult handler not found")
+source = source.replace(old_result, "")
+
 if "APP_WIDGET_HOST_ID" not in source or "showWidgetPicker()" not in source or "renderWidgets()" not in source:
     raise SystemExit("Widget host patch validation failed")
 
