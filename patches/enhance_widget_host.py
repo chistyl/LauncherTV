@@ -271,5 +271,26 @@ missing = [token for token in required if token not in s]
 if missing:
     raise SystemExit("Widget enhancement validation failed: " + ", ".join(missing))
 
+# Keep the source package documentation aligned with the implemented controls.
+project_root = path.parents[7]
+readme = project_root / "README.zh-TW.md"
+if readme.exists():
+    docs = readme.read_text(encoding="utf-8")
+    if "## 原生 Android 小工具" not in docs:
+        docs += """
+
+## 原生 Android 小工具
+- 使用 Android 原生 AppWidgetHost / AppWidgetManager，支援系統中已安裝且可用的第三方 Widget Provider。
+- 可從首頁「新增小工具」加入，支援 Provider 綁定授權與首次設定畫面。
+- 每個小工具可選小、中、大三種版面尺寸；尺寸會透過 AppWidget options 通知 Provider，並保存於 Launcher。
+- 可向左／向右調整小工具順序；重新啟動 Launcher 後會恢復已加入的小工具、尺寸與順序。
+- 將焦點移至小工具後，可長按遙控器確認鍵，或按 MENU／INFO 開啟管理選單；支援重新設定及移除。
+- 暫時無法建立 RemoteViews 時保留有效的小工具 ID，避免短暫錯誤造成設定遺失。
+- Widget 功能在 Manifest 中標示為選用；不具備 Widget host 的 Android TV 仍可使用 Launcher 其他功能。
+
+注意：部分 Android TV 韌體會停用 AppWidgetHost，或沒有提供任何第三方 Widget Provider。這種情況下，Launcher 會顯示無可用小工具提示；是否能顯示特定 Widget，仍取決於電視系統及該 Provider 的相容性。
+"""
+        readme.write_text(docs, encoding="utf-8")
+
 path.write_text(s, encoding="utf-8")
 print("Enhanced Widget size, order, recovery and remote-focus controls:", path)
