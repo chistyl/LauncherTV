@@ -3,7 +3,7 @@ name: Android APK Build
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, feature/home-screen-app-widgets-compatibility ]
     paths:
       - 'TVLauncher-v1.9.1-ready.zip'
       - 'app/**'
@@ -60,6 +60,14 @@ jobs:
           test -f "$MAIN_ACTIVITY"
           sed -i 's/ri\.loadBanner(pm)/ri.activityInfo.loadBanner(pm)/' "$MAIN_ACTIVITY"
           echo "PROJECT_DIR=source/TVRemoteLauncher-v1.9" >> "$GITHUB_ENV"
+
+      - name: Package source for compatibility audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: TVLauncher-v1.9.1-source-audit
+          path: source/TVRemoteLauncher-v1.9
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Build debug APK
         run: gradle --no-daemon -p "$PROJECT_DIR" assembleDebug
