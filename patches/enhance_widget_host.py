@@ -215,7 +215,7 @@ replacement = r'''    private JSONObject readWidgetSizes() {
             widgetContainer.addView(widgetView, lp);
             if (firstWidgetViewId == View.NO_ID) firstWidgetViewId = widgetView.getId();
             valid.put(id);
-            if (widgetFocusId == id) { final View focusTarget = widgetView; focusTarget.post(() -> focusTarget.requestFocus()); }
+            if (widgetFocusId == id) { final View focusTarget = widgetView; focusTarget.post(() -> { focusTarget.requestFocus(); widgetFocusId = -1; }); }
         }
         if (valid.length() != ids.length()) saveWidgetIds(valid);
         if (widgetSection != null) widgetSection.setVisibility(valid.length() == 0 ? View.GONE : View.VISIBLE);
