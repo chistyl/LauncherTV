@@ -68,6 +68,30 @@ jobs:
       - name: Add widget sizing, ordering and remote controls
         run: python3 patches/enhance_widget_host.py "$PROJECT_DIR/app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java"
 
+      - name: Verify Widget implementation and Android TV compatibility
+        shell: bash
+        run: |
+          python3 - "$PROJECT_DIR" <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          project = Path(sys.argv[1])
+          manifest = (project / "app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+          gradle = (project / "app/build.gradle").read_text(encoding="utf-8")
+          java = (project / "app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java").read_text(encoding="utf-8")
+
+          assert re.search(r'<uses-feature android:name="android.software.app_widgets" android:required="false"\s*/>', manifest), "Widget feature must be optional"
+          assert r"\\n" not in manifest, "Manifest contains a literal escaped newline"
+          assert re.search(r'\bminSdk\s+26\b', gradle), "Minimum Android version must remain API 26"
+          assert re.search(r'\bversionCode\s+10\b', gradle), "Version Code changed unexpectedly"
+          assert "applicationIdSuffix '.debug'" in gradle, "Debug build must remain installable alongside release"
+          for token in ("showWidgetPicker", "showWidgetActions", "resizeWidget", "moveWidget", "findFocusedWidgetHost", "updateAppWidgetOptions"):
+              assert token in java, f"Missing Widget feature: {token}"
+          assert java.count("onActivityResult(int requestCode, int resultCode, Intent data)") == 1, "Duplicate Activity result handler"
+          print("Widget implementation and Android TV compatibility checks passed.")
+          PY
+
       - name: Package source for compatibility audit
         uses: actions/upload-artifact@v4
         with:
