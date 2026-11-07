@@ -65,6 +65,9 @@ jobs:
       - name: Apply native Android TV widget host
         run: python3 patches/apply_widget_host.py "$PROJECT_DIR/app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java"
 
+      - name: Add widget sizing, ordering and remote controls
+        run: python3 patches/enhance_widget_host.py "$PROJECT_DIR/app/src/main/java/tw/kangyuan/tvlauncher/MainActivity.java"
+
       - name: Package source for compatibility audit
         uses: actions/upload-artifact@v4
         with:
