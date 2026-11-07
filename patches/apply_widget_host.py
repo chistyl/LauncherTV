@@ -41,6 +41,7 @@ source = source.replace(
     '    @Override protected void onStart() {\n'
     '        super.onStart();\n'
     '        try { appWidgetHost.startListening(); } catch (Exception ignored) {}\n'
+    '        renderWidgets();\n'
     '    }\n\n'
     '    @Override protected void onStop() {\n'
     '        try { appWidgetHost.stopListening(); } catch (Exception ignored) {}\n'
