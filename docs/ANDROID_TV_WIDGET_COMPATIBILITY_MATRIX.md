@@ -11,6 +11,23 @@ This matrix defines the validation policy for LauncherTV's third-party widget ho
 | C — Host unavailable | Widget manager / host binding unavailable or OEM blocks required flow | Hide or disable Add widget with a clear explanation; all other launcher features remain available | Graceful fallback |
 | D — Provider incompatible | Provider is missing, invalid, phone-only, touch-dependent, or fails to create a RemoteViews hierarchy | Skip or quarantine that provider; allow removal/retry; do not crash launcher | Graceful fallback |
 
+## Verified Android API facts
+
+The Android platform reference documents the classic `AppWidgetHost` class from API level 3, so the basic host lifecycle is longstanding. The binding permission flow is more version-sensitive: `AppWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)` is available from API 16, and the overload with options is available from API 17. The host configuration helper `startAppWidgetConfigureActivityForResult(...)` is available from API 21. These API levels are technical availability facts, not a promise that every TV OEM exposes or permits widget hosting.
+
+Implementation consequences:
+- Keep the basic host path on the classic APIs, subject to the project's real minSdk.
+- Guard API 17+ and API 21+ calls with runtime SDK checks if the project supports earlier Android versions.
+- On older API levels, use the compatible binding/configuration intent flow supported by that API, with explicit user consent; do not call newer helper methods unconditionally.
+- Always handle binding cancellation/denial, missing configuration activities, and provider removal.
+- Do not assume API 26+ pinning support is required; LauncherTV's own Add Widget flow should be implemented independently.
+- Do not use API 35+ preview APIs as a requirement for basic widget support.
+
+Official references:
+- [AppWidgetHost API reference](https://developer.android.com/reference/android/appwidget/AppWidgetHost)
+- [AppWidgetManager API reference](https://developer.android.com/reference/android/appwidget/AppWidgetManager)
+- [Build a widget host](https://developer.android.com/develop/ui/views/appwidgets/host)
+
 ## Android API compatibility policy
 
 - Determine the actual `minSdkVersion` from the V1.9.1 source before implementation. Do not guess it or raise it as a shortcut.
