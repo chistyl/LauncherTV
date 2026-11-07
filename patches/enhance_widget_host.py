@@ -178,7 +178,7 @@ replacement = r'''    private JSONObject readWidgetSizes() {
                 hostView.setOnLongClickListener(v -> { showWidgetActions(id); return true; });
                 hostView.setOnKeyListener((v, keyCode, event) -> {
                     if (event.getAction() == KeyEvent.ACTION_DOWN &&
-                        (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_INFO)) {
+                        (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_INFO ||\n                        (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && event.isLongPress()))) {
                         showWidgetActions(id);
                         return true;
                     }
@@ -254,7 +254,7 @@ s = s.replace(
     '    @Override public boolean onKeyDown(int keyCode,KeyEvent event) {\n'
     '        if(keyCode==KeyEvent.KEYCODE_MENU){',
     '    @Override public boolean onKeyDown(int keyCode,KeyEvent event) {\n'
-    '        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_INFO) {\n'
+    '        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_INFO ||\n            (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && event.isLongPress())) {\n'
     '            AppWidgetHostView focusedWidget = findFocusedWidgetHost();\n'
     '            if (focusedWidget != null) { showWidgetActions(focusedWidget.getAppWidgetId()); return true; }\n'
     '        }\n'
