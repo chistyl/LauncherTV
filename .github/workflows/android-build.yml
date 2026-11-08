@@ -88,6 +88,14 @@ jobs:
           assert "applicationIdSuffix '.debug'" in gradle, "Debug build must remain installable alongside release"
           for token in ("showWidgetPicker", "showWidgetActions", "resizeWidget", "moveWidget", "findFocusedWidgetHost", "updateAppWidgetOptions"):
               assert token in java, f"Missing Widget feature: {token}"
+          # Validate the generated Activity, not merely the patch scripts.
+          assert "KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_INFO" in java, "Widget MENU / INFO handling is missing from Activity.onKeyDown"
+          assert "event.isLongPress()" in java, "Long-press OK handling is missing"
+          assert "focusedWidget.getAppWidgetId()" in java, "Focused widget ID is not routed to its management menu"
+          assert "appWidgetHost.startListening()" in java and "appWidgetHost.stopListening()" in java, "Widget host lifecycle is incomplete"
+          assert "appWidgetHost.deleteAppWidgetId(widgetId)" in java, "Widget removal must release the allocated host ID"
+          assert "KEY_WIDGET_IDS" in java and "KEY_WIDGET_SIZES" in java, "Widget IDs and sizes must be persisted"
+          assert "setNextFocusDownId(grid.getId())" in java and "grid.setNextFocusUpId(firstWidgetViewId)" in java, "D-pad focus bridge between widgets and app grid is missing"
           assert java.count("onActivityResult(int requestCode, int resultCode, Intent data)") == 1, "Duplicate Activity result handler"
           print("Widget implementation and Android TV compatibility checks passed.")
           PY
